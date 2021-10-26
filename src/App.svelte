@@ -1,7 +1,9 @@
 <script>
-	import Channel from './lib/Channel.svelte'
-	import Time from './lib/Time.svelte'
-	let channels = Array(8).fill(null).map((ch, i) => ({ id: i }))
+	import { bpm, quantize } from './lib/stores.js'
+	import Channel from './components/Channel.svelte'
+	import Time from './components/Time.svelte'
+
+	let channels = Array(7).fill(null).map((_, i) => ({ id: i }))
 </script>
 
 <main>
@@ -15,10 +17,10 @@
 		</thead>
 		<tbody>
 			{#each channels as channel}
-				<Channel {...channel} />
+				<Channel {bpm} {buffer} {...channel} />
 			{/each}
 		</tbody>
 	</table>
 
-	<Time />
+	<Time {bpm} {quantize} />
 </main>
