@@ -4,6 +4,7 @@
 	import Group from './lib/group.js'
 	import Channel from './components/Channel.svelte'
 	import Time from './components/Time.svelte'
+	import Strip from './components/Strip.svelte'
 
 	let _audioContext
 	audioContext.subscribe(ac => _audioContext = ac)
@@ -33,4 +34,8 @@
 	</table>
 
 	<Time {bpm} {quantize} />
+
+	{#each groups as group}
+		<Strip source={group} />
+	{/each}
 </main>
