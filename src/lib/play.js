@@ -28,9 +28,11 @@ export default class Play {
     if (this.elapsed > (this.sample.loopStart + this.sample.loopDuration) && this.sample.loop) {
       this.elapsed = this.sample.loopStart + (this.elapsed - (this.sample.loopStart + this.sample.loopDuration))
     }
-
-    this.sample.progress = Math.min(this.elapsed / this.sample.duration, 0.9999999999999999)
-
+    this.sample.progress = this.progress
     this.elapsedCheckedAt = currentTime
+  }
+
+  get progress () {
+    return Math.min(this.elapsed / this.sample.duration, 1)
   }
 }
