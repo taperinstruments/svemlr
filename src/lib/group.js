@@ -1,3 +1,4 @@
+import { writable, derived } from 'svelte/store'
 import Sample from './sample.js'
 
 export default class Group {
@@ -6,33 +7,28 @@ export default class Group {
     this.audioContext = audioContext
     this.node = audioContext.createGain()
     this.node.connect(audioContext.destination)
-    this.level = level
+    this.level = writable(level)
+    this.muted = writable(false)
+    this.gain = derived([this.level, this.muted], ([$level, $muted]) => {
+      return this.node.gain.value = $muted ? 0 : $level
+    })
+    this.gain.subscribe(() => {})
+    this.active = writable(false)
   }
 
-  get level () {
-    return this._level
-  }
-
-  set level (value) {
-    this._level = value
-    this.node.gain.value = value
-  }
-
-  set muted (value) {
-    this._muted = value
-    this.node.gain.value = value ? 0 : this._level
-  }
-
-  get muted () {
-    return this._muted
-  }
   play (buffer, options = {}) {
-    this.sample?.stop()
+    this.stop()
     const source = this.createBufferSource(buffer)
     const { when, offset, duration, ...sampleOptions } = options
     this.sample = new Sample(source, sampleOptions)
     this.sample.start(when, offset, duration)
+    this.active.set(true)
     return this.sample
+  }
+
+  stop () {
+    this.sample?.stop()
+    this.active.set(false)
   }
 
   createBufferSource (buffer) {
