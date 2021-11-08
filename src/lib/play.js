@@ -11,6 +11,7 @@ export default class Play {
 
   start (when, offset = 0, duration) {
     this.elapsed = offset
+    this.sample.progress = this.progress
     this.elapsedCheckedAt = this.audioContext.currentTime
     this.timerId = timers.setInterval(() => {
       this.trackProgress()
