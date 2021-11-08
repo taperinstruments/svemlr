@@ -1,4 +1,4 @@
-import * as timers from './timers.js'
+import * as timers from 'worker-timers'
 
 export default class Play {
   constructor (sample) {
