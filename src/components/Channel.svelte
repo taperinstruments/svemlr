@@ -1,6 +1,8 @@
 <script>;
-	import { arrayOf } from '../lib/utils.js'
+	import { arrayOf, chunk } from '../lib/utils.js'
 	export let id
+	$: y = id + 1
+	export let monome
 	export let reverse = false
 
 	export let groups
@@ -43,8 +45,39 @@
 		sample.addEventListener('progress', () => {
 			currentStep = Math.floor(sample.progress * enabledStepCount)
 		})
-		sample.addEventListener('ended', () => currentStep = null)
+		sample.addEventListener('ended', () => {
+			currentStep = null
+		})
 	}
+
+	$: {
+		const steps = arrayOf(enabledStepCount, i => i === currentStep)
+		const quads = chunk(steps, 8)
+		quads.forEach((quad, i) => monome.gridLedRow(i * 8, y, quad))
+	}
+	const keyDowns = []
+	monome.on('gridKeyDown', (event) => {
+		const { x } = event
+		if (event.y === y && x < enabledStepCount) {
+			keyDowns.push(x)
+
+			if (keyDowns.length === 1) {
+				start(x)
+				loopStartStep = null
+				loopEndStep = null
+			} else if (keyDowns.length === 2) {
+				const [start, end] = keyDowns.sort((a, b) => a - b)
+				loopStartStep = start
+				loopEndStep = end + 1
+			}
+		}
+	})
+	monome.on('gridKeyUp', (event) => {
+		const { x } = event
+		if (event.y === y) {
+			keyDowns.splice(keyDowns.indexOf(x), 1)
+		}
+	})
 </script>
 
 <tr>
