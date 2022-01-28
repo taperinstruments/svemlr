@@ -1,12 +1,12 @@
-export function subscribe (stores, fn) {
+export function subscribe (stores, callback) {
   const values = []
   const unsubscribes = stores.map((store, i) => {
     return store.subscribe(value => {
       values[i] = value
-      fn(values)
+      callback(values)
     })
   })
-  return function () {
+  return function unsubscribe () {
     unsubscribes.forEach(unsubscribe => unsubscribe())
   }
 }
