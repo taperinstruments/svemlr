@@ -1,4 +1,5 @@
-import { derived, writable } from 'svelte/store'
+import { subscribe } from '../helpers/store-helpers'
+import { writable } from 'svelte/store'
 import { arrayOf } from '../helpers/array-helpers'
 import { createAudioSource } from './audio-source'
 
@@ -16,15 +17,13 @@ export function createGroup ({ id, audioContext }) {
   const active = writable(false)
   const level = writable(1)
   const muted = writable(false)
-  const gain = derived(
-    [level, muted],
-    ([$level, $muted]) => node.gain.value = $muted ? 0 : $level
-  )
+  subscribe([level, muted], ([$level, $muted]) => {
+    node.gain.value = $muted ? 0 : $level
+  })
 
   function play (buffer, offset, sample) {
     stop()
     const source = createBufferSource(buffer)
-    source.connect(node)
     audioSource = createAudioSource(source, sample)
     audioSource.start(0, offset)
     active.set(true)
@@ -39,6 +38,7 @@ export function createGroup ({ id, audioContext }) {
   function createBufferSource (buffer) {
     const source = audioContext.createBufferSource()
     source.buffer = buffer
+    source.connect(node)
     return source
   }
 
@@ -46,7 +46,6 @@ export function createGroup ({ id, audioContext }) {
     id,
     level,
     muted,
-    gain,
     active,
     play,
     stop
