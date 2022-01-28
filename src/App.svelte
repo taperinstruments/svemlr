@@ -1,42 +1,28 @@
 <script>
-	import { arrayOf, fetchAudioBuffer } from './lib/utils.js'
-	import { bpm, quantize, audioContext } from './lib/stores.js'
+	import { getContext } from 'svelte'
+	import { promise } from './helpers/promise-helpers'
 	import WebMonome from 'webmonome'
-	import Clock from './lib/clock.js'
-	import Group from './lib/group.js'
+	import Sample from './components/Sample.svelte'
 	import GroupActive from './components/GroupActive.svelte'
-	import Channel from './components/Channel.svelte'
 	import Time from './components/Time.svelte'
 	import Strip from './components/Strip.svelte'
 
-	let _audioContext
-	audioContext.subscribe(ac => _audioContext = ac)
+	const audioContext = getContext('audioContext')
 
-	const clock = new Clock(_audioContext, $bpm)
-	let time = +new Date()
-	clock.addEventListener('tick', ({ detail: { count } }) => {
-		time = +new Date()
-	})
-
-	const groups = arrayOf(4, i => new Group(i, _audioContext))
-
-	let channels = arrayOf(7, i => ({ id: i, groupId: 0 }))
+	export let router = {}
+	export let groups = []
+	export let samples = []
+	export let bpm = {}
+	export let quantize = {}
 
 	let monome
-	let resolveConnectMonome
-	const connectMonome = new Promise(resolve => resolveConnectMonome = resolve)
-	async function connect () {
-		_audioContext.resume()
-		clock.start()
-		monome = await WebMonome.connect()
-		resolveConnectMonome(monome)
-	}
+	const grid = promise()
 
-	function setup () {
-		return Promise.all([
-			fetchAudioBuffer('/drums.mp3'),
-			connectMonome
-		])
+	async function connect () {
+		audioContext.resume()
+		monome = await WebMonome.connect()
+		router.start(monome)
+		grid.resolve(monome)
 	}
 </script>
 
@@ -44,7 +30,8 @@
 	{#if !monome}
 		<button on:click={connect}>Connect</button>
 	{/if}
-	{#await setup() then [buffer, monome]}
+
+	{#await grid.promise then monome}
 		{#each groups as group}
 			<GroupActive {monome} {group} />
 		{/each}
@@ -58,9 +45,9 @@
 				<th>Group</th>
 			</thead>
 			<tbody>
-					{#each channels as channel}
-						<Channel {monome} {groups} {bpm} {buffer} {...channel} />
-					{/each}
+				{#each samples as sample}
+					<Sample {sample} {groups} {monome} />
+				{/each}
 			</tbody>
 		</table>
 
