@@ -4,16 +4,22 @@ import { subscribe } from '../helpers/store-helpers'
 
 export let samples = []
 
-export function createSamples(count, { group, bpm }) {
-  return samples = arrayOf(count, i => createSample({ id: i, group, bpm }))
+export function createSamples (count, options) {
+  return samples = arrayOf(count, i => createSample({ id: i, ...options }))
 }
 
 /**
  *
- * @param {{id: number, group: object, bpm: import('svelte/store').Writable}} options
+ * @param {{
+ *  id: number,
+ *  group: object,
+ *  bpm: import('svelte/store').Writable,
+ *  quantize: import('svelte/store').Writable,
+ *  scheduler: object
+ * }} options
  * @returns {object}
  */
-export function createSample ({ id, group, bpm }) {
+export function createSample ({ id, group, bpm, quantize, scheduler }) {
   group = writable(group)
   const STEP_COUNT = 16
   const buffer = writable(null)
@@ -95,6 +101,9 @@ export function createSample ({ id, group, bpm }) {
     settings[key].subscribe(value => attrs[key] = value)
   }
 
+  bpm.subscribe($bpm => scheduler.bpm = $bpm)
+  quantize.subscribe($quantize => scheduler.quantize = $quantize)
+
   subscribe(
     [progress, playing, enabledStepCount],
     ([$progress, $playing, $enabledStepCount]) => {
@@ -107,9 +116,11 @@ export function createSample ({ id, group, bpm }) {
   function start (step) {
     if (!attrs.buffer || !validStep(step)) return
 
-    startStep.set(step)
-    attrs.group.play(attrs.buffer, attrs.offset, sample)
-    playing.set(true)
+    scheduler.schedule(function () {
+      startStep.set(step)
+      attrs.group.play(attrs.buffer, attrs.offset, sample)
+      playing.set(true)
+    })
   }
 
   function stop () {
