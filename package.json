@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "waaclock": "git+https://github.com/taperinstruments/WAAClock.git#process",
-    "webmonome": "file:../webmonome",
+    "webmonome": "git://github.com/domchristie/webmonome.git#prepare",
     "worker-timers": "^7.0.41"
   }
 }
