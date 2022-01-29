@@ -31,6 +31,7 @@
 
 	// start sample from radio button press
 	function jumpStart (event) {
+		event.preventDefault() // prevent error when setting currentStep
 		start(Number(event.target.value))
 	}
 

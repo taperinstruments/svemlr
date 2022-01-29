@@ -1,6 +1,5 @@
 import { writable, derived } from 'svelte/store'
 import { arrayOf } from '../helpers/array-helpers'
-import { subscribe } from '../helpers/store-helpers'
 
 export let samples = []
 
@@ -46,7 +45,11 @@ export function createSample ({ id, group, bpm, quantize, scheduler }) {
   )
   const progress = writable(0)
   const playing = writable(false)
-  const currentStep = writable(null)
+  const currentStep = derived(
+    [progress, playing, enabledStepCount],
+    ([$progress, $playing, $enabledStepCount]) =>
+      $playing ? Math.floor($progress * $enabledStepCount) : null
+  )
   const speed = derived(
     [duration, stepsDuration, octave],
     ([$duration, $stepsDuration, $octave]) =>
@@ -103,15 +106,6 @@ export function createSample ({ id, group, bpm, quantize, scheduler }) {
 
   bpm.subscribe($bpm => scheduler.bpm = $bpm)
   quantize.subscribe($quantize => scheduler.quantize = $quantize)
-
-  subscribe(
-    [progress, playing, enabledStepCount],
-    ([$progress, $playing, $enabledStepCount]) => {
-      currentStep.set(
-        $playing ? Math.floor($progress * $enabledStepCount) : null
-      )
-    }
-  )
 
   function start (step) {
     if (!attrs.buffer || !validStep(step)) return
