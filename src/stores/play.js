@@ -23,11 +23,12 @@ export function createPlay (source, callback) {
     const now = currentTime()
     const durationSinceCheck = now - elapsedCheckedAt
     elapsed += durationSinceCheck * speed()
-    if (loop() && elapsed > (loopStart() + loopDuration())) {
-      elapsed = loopStart() + (elapsed - (loopStart() + loopDuration()))
+
+    if (loop() && elapsed > loopEnd()) {
+      elapsed = loopStart() + (elapsed - loopEnd())
     }
     callback(progress())
-    elapsedCheckedAt = currentTime()
+    elapsedCheckedAt = now
   }
 
   function currentTime () {
