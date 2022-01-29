@@ -2,7 +2,8 @@ import { get } from 'svelte/store'
 import App from './App.svelte'
 import * as router from './router.js'
 import './routes.js'
-import { bpm, quantize } from './stores/time.js'
+import { files } from './stores/files'
+import { bpm, quantize } from './stores/time'
 import { createScheduler } from './stores/scheduler'
 import { createGroups } from './stores/group'
 import { createSamples } from './stores/sample'
@@ -27,6 +28,7 @@ const app = new App({
   target: document.getElementById('app'),
   props: {
     router,
+    files,
     bpm,
     quantize,
     groups,

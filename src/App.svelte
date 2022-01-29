@@ -3,6 +3,7 @@
 	import { promise } from './helpers/promise-helpers'
 	import WebMonome from 'webmonome'
 	import Sample from './components/Sample.svelte'
+	import Files from './components/Files.svelte'
 	import GroupActive from './components/GroupActive.svelte'
 	import Time from './components/Time.svelte'
 	import Strip from './components/Strip.svelte'
@@ -10,10 +11,11 @@
 	const audioContext = getContext('audioContext')
 
 	export let router = {}
-	export let groups = []
-	export let samples = []
+	export let files = {}
 	export let bpm = {}
 	export let quantize = {}
+	export let groups = []
+	export let samples = []
 
 	let monome
 	const grid = promise()
@@ -36,20 +38,25 @@
 			<GroupActive {monome} {group} />
 		{/each}
 
-		<table>
-			<thead>
-				<th></th>
-				<th>Octave</th>
-				<th>Speed</th>
-				<th></th>
-				<th>Group</th>
-			</thead>
-			<tbody>
-				{#each samples as sample}
-					<Sample {sample} {groups} {monome} />
-				{/each}
-			</tbody>
-		</table>
+		<section class="samples">
+			<table>
+				<thead>
+					<th></th>
+					<th></th>
+					<th>Octave</th>
+					<th>Speed</th>
+					<th></th>
+					<th>Group</th>
+				</thead>
+				<tbody>
+					{#each samples as sample}
+						<Sample {sample} {groups} {monome} {files} />
+					{/each}
+				</tbody>
+			</table>
+
+			<Files {files} />
+		</section>
 
 		<Time {bpm} {quantize} />
 
@@ -58,3 +65,9 @@
 		{/each}
 	{/await}
 </main>
+
+<style>
+	.samples {
+		display: flex;
+	}
+</style>

@@ -1,7 +1,8 @@
 <script>
 	import { getContext } from 'svelte'
+	import { fileToAudioBuffer } from '../helpers/audio-helpers'
 	import { gridLedRow } from '../helpers/monome-helpers'
-	import { fetchAudioBuffer } from '../helpers/audio-helpers'
+	import FileSelect from './FileSelect.svelte'
 
 	const audioContext = getContext('audioContext')
 
@@ -29,16 +30,21 @@
 	$: y = id + 1
 	$: gridLedRow(monome, y, $enabledSteps.map((step, i) => i === $currentStep))
 
+	export let files = {}
+	let file
+	$: if (file) fileToAudioBuffer(file, audioContext).then(b => $buffer = b)
+
 	// start sample from radio button press
 	function jumpStart (event) {
 		event.preventDefault() // prevent error when setting currentStep
 		start(Number(event.target.value))
 	}
-
-	fetchAudioBuffer('/drums.mp3', audioContext).then(b => $buffer = b)
 </script>
 
 <tr>
+	<td>
+		<FileSelect {files} bind:selected={file} />
+	</td>
 	<td>
 		<div>
 			{#each $steps as step, i}

@@ -1,5 +1,9 @@
-export async function fetchAudioBuffer (filepath, audioContext) {
-  const response = await fetch(filepath)
-  const arrayBuffer = await response.arrayBuffer()
-  return audioContext.decodeAudioData(arrayBuffer)
+const fileReader = new FileReader()
+export function fileToAudioBuffer (file, audioContext) {
+  return new Promise(resolve => {
+    fileReader.readAsArrayBuffer(file)
+    fileReader.onload = async ({ target: { result } }) => {
+      resolve(await audioContext.decodeAudioData(result))
+    }
+  })
 }
