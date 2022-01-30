@@ -67,6 +67,9 @@
 </main>
 
 <style>
+	* {
+		accent-color: orange;
+	}
 	.samples {
 		display: flex;
 	}
