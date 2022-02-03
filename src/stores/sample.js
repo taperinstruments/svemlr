@@ -1,5 +1,6 @@
 import { writable, derived } from 'svelte/store'
 import { arrayOf } from '../helpers/array-helpers'
+import { reverseBuffer } from '../helpers/audio-helpers'
 
 export let samples = []
 
@@ -22,6 +23,10 @@ export function createSample ({ id, group, bpm, quantize, scheduler }) {
   group = writable(group)
   const STEP_COUNT = 16
   const buffer = writable(null)
+  const reffub = derived(
+    buffer,
+    ($buffer) => $buffer && reverseBuffer($buffer)
+  )
   const duration = derived(buffer, $buffer => $buffer?.duration)
   const octave = writable(0)
   const reverse = writable(false)
@@ -80,6 +85,7 @@ export function createSample ({ id, group, bpm, quantize, scheduler }) {
   const settings = {
     group,
     buffer,
+    reffub,
     duration,
 
     enabledStepCount,
@@ -112,7 +118,7 @@ export function createSample ({ id, group, bpm, quantize, scheduler }) {
     if (!attrs.buffer || !validStep(step)) return
     scheduler.schedule(function () {
       startStep.set(transpose(step))
-      attrs.group.play(attrs.buffer, attrs.offset, sample)
+      attrs.group.play(attrs.reverse ? attrs.reffub : attrs.buffer, attrs.offset, sample)
       playing.set(true)
     })
   }
