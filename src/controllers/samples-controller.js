@@ -10,8 +10,8 @@ export default {
     )
 
     if (keyDowns.length === 1) {
-      sample.start(x)
       sample.resetLoopPoints()
+      sample.start(x)
     } else if (keyDowns.length === 2) {
       sample.loopBetween(keyDowns)
     }
