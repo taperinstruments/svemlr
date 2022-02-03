@@ -33,7 +33,7 @@ export function createSample ({ id, group, bpm, quantize, scheduler }) {
   const startStep = writable(0)
   const loopStartStep = writable(0)
   const loopEndStep = writable()
-  const enabledStepCount = writable(8)
+  const enabledStepCount = writable(16)
   const steps = derived(
     enabledStepCount,
     $enabledStepCount =>
