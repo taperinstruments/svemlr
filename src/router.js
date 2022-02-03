@@ -1,7 +1,7 @@
 import { arrayOf } from './helpers/array-helpers'
 
 const routes = []
-const grid = arrayOf(16, arrayOf(16, 0))
+const grid = arrayOf(16, () => arrayOf(16, 0))
 
 export function route (matcher, handler) {
   routes.push({ matcher, handler })
