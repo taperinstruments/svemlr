@@ -1,4 +1,3 @@
-
 import { arrayOf } from './helpers/array-helpers'
 
 const routes = []
