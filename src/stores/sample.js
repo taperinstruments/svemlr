@@ -48,7 +48,7 @@ export function createSample ({ id, group, bpm, quantize, scheduler }) {
   const currentStep = derived(
     [progress, playing, enabledStepCount],
     ([$progress, $playing, $enabledStepCount]) =>
-      $playing ? Math.floor($progress * $enabledStepCount) : null
+      $playing ? transpose(Math.floor($progress * $enabledStepCount)) : null
   )
   const speed = derived(
     [duration, stepsDuration, octave],
@@ -68,7 +68,8 @@ export function createSample ({ id, group, bpm, quantize, scheduler }) {
   const loopEnd = derived(
     [duration, enabledStepCount, loopEndStep],
     ([$duration, $enabledStepCount, $loopEndStep]) =>
-      ($duration / $enabledStepCount) * ($loopEndStep || $enabledStepCount)
+      ($duration / $enabledStepCount) *
+        ($loopEndStep != null ? $loopEndStep : $enabledStepCount)
   )
   const loopDuration = derived(
     [loopStart, loopEnd],
@@ -109,9 +110,8 @@ export function createSample ({ id, group, bpm, quantize, scheduler }) {
 
   function start (step) {
     if (!attrs.buffer || !validStep(step)) return
-
     scheduler.schedule(function () {
-      startStep.set(step)
+      startStep.set(transpose(step))
       attrs.group.play(attrs.buffer, attrs.offset, sample)
       playing.set(true)
     })
@@ -121,17 +121,34 @@ export function createSample ({ id, group, bpm, quantize, scheduler }) {
     playing.set(false)
   }
 
-  function loopBetween ([startStep, endStep]) {
-    if (!validStep(startStep) || !validStep(endStep)) return
-    loopStartStep.set(startStep)
-    loopEndStep.set(endStep)
+  function resetLoopPoints () {
+    loopStartStep.set(0)
+    loopEndStep.set(null)
+  }
+
+  function loopBetween (steps) {
+    if (!validStep(steps[0]) || !validStep(steps[1])) return
+    steps = transpose(steps)
+    const { reverse } = attrs
+    loopStartStep.set(reverse ? steps[1] : steps[0])
+    loopEndStep.set(reverse ? steps[0] : steps[1])
   }
 
   function validStep (step) {
     return step < attrs.enabledStepCount
   }
 
-  const sample = { id, ...settings, start, stop, loopBetween }
+  function transpose (step) {
+    return Array.isArray(step) ? step.map(transposeStep) : transposeStep(step)
+  }
+
+  function transposeStep (step) {
+    if (step == null) return step
+    const { enabledStepCount, reverse } = attrs
+    return reverse ? Math.abs(step - (enabledStepCount - 1)) : step
+  }
+
+  const sample = { id, ...settings, start, stop, resetLoopPoints, loopBetween }
 
   return sample
 }

@@ -11,7 +11,7 @@ export default {
 
     if (keyDowns.length === 1) {
       sample.start(x)
-      sample.loopBetween([0, null])
+      sample.resetLoopPoints()
     } else if (keyDowns.length === 2) {
       sample.loopBetween(keyDowns)
     }
