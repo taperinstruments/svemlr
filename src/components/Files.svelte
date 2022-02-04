@@ -1,11 +1,13 @@
 <script>
   export let files
+  let newFiles
+  $: files.update($files => [...$files, ...(newFiles || [])])
 </script>
 
 <section>
   <label for="files">Audio file drop</label>
   <div class="file-drop">
-    <input accept="audio/*" bind:files={$files} id="files" name="files" type="file" />
+    <input accept="audio/*" bind:files={newFiles} id="files" name="files" type="file" />
 
     {#if $files.length}
       <ul>
