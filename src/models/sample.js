@@ -118,10 +118,22 @@ export function createSample ({ id, audioContext, group, bpm, quantize, schedule
 
   let source
   let playhead
-  loopStart.subscribe(value => source && (source.loopStart = value))
-  loopEnd.subscribe(value => source && (source.loopEnd = value))
-  loop.subscribe(value => source && (source.loop = value))
-  speed.subscribe(value => source && (source.playbackRate.value = value))
+  loopStart.subscribe(value => {
+    source && (source.loopStart = value)
+    playhead?.check()
+  })
+  loopEnd.subscribe(value => {
+    source && (source.loopEnd = value)
+    playhead?.check()
+  })
+  loop.subscribe(value => {
+    source && (source.loop = value)
+    playhead?.check()
+  })
+  speed.subscribe(value => {
+    source && (source.playbackRate.value = value)
+    playhead?.check()
+  })
 
   function start (step) {
     if (!attrs.buffer || !validStep(step)) return
