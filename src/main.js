@@ -2,11 +2,11 @@ import { get } from 'svelte/store'
 import App from './App.svelte'
 import * as router from './router.js'
 import './routes.js'
-import { files } from './stores/files'
-import { bpm, quantize } from './stores/time'
-import { createScheduler } from './stores/scheduler'
-import { createGroups } from './stores/group'
-import { createSamples } from './stores/sample'
+import { files } from './models/files'
+import { bpm, quantize } from './models/time'
+import { createScheduler } from './models/scheduler'
+import { createGroups } from './models/group'
+import { createSamples } from './models/sample'
 
 const audioContext = new AudioContext()
 const scheduler = createScheduler({

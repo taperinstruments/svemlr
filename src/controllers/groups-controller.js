@@ -1,4 +1,4 @@
-import { groups } from '../stores/group'
+import { groups } from '../models/group'
 
 export default {
   stop: ({ x }) => {

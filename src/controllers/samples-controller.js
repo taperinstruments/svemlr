@@ -1,4 +1,4 @@
-import { samples } from '../stores/sample'
+import { samples } from '../models/sample'
 
 export default {
   loop: ({ x, y, grid }) => {
