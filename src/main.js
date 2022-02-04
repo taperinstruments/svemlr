@@ -16,6 +16,7 @@ const scheduler = createScheduler({
 })
 const groups = createGroups(4, audioContext)
 const samples = createSamples(7, {
+  audioContext,
   group: groups[0],
   bpm,
   quantize,

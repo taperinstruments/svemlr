@@ -1,6 +1,5 @@
 import { writable, derived } from 'svelte/store'
 import { arrayOf } from '../helpers/array-helpers'
-import { createAudioSource } from './audio-source'
 
 export let groups = []
 
@@ -9,38 +8,28 @@ export function createGroups (count, audioContext) {
 }
 
 export function createGroup ({ id, audioContext }) {
-  let audioSource
+  let currentSource
   const node = audioContext.createGain()
   node.connect(audioContext.destination)
 
   const active = writable(false)
   const level = writable(1)
   const muted = writable(false)
-  const gain = derived(
-    [level, muted],
-    ([$level, $muted]) => $muted ? 0 : $level
-  )
+  const gain = derived([level, muted], ([$lvl, $muted]) => $muted ? 0 : $lvl)
   gain.subscribe(value => node.gain.value = value)
 
-  function play (buffer, offset, sample) {
+  function play (source, offset, sample) {
     stop()
-    const source = createBufferSource(buffer)
-    audioSource = createAudioSource(source, sample)
-    audioSource.start(0, offset)
+    currentSource = source
+    source.connect(node)
+    source.start(0, offset)
     active.set(true)
-    return audioSource
+    return source
   }
 
   function stop () {
-    audioSource?.stop()
+    currentSource?.stop()
     active.set(false)
-  }
-
-  function createBufferSource (buffer) {
-    const source = audioContext.createBufferSource()
-    source.buffer = buffer
-    source.connect(node)
-    return source
   }
 
   return {

@@ -1,6 +1,7 @@
 import { writable, derived } from 'svelte/store'
 import { arrayOf } from '../helpers/array-helpers'
 import { reverseBuffer } from '../helpers/audio-helpers'
+import { createPlayhead } from './playhead'
 
 export let samples = []
 
@@ -12,6 +13,7 @@ export function createSamples (count, options) {
  *
  * @param {{
  *  id: number,
+ *  audioContext: AudioContext,
  *  group: object,
  *  bpm: import('svelte/store').Writable,
  *  quantize: import('svelte/store').Writable,
@@ -19,7 +21,7 @@ export function createSamples (count, options) {
  * }} options
  * @returns {object}
  */
-export function createSample ({ id, group, bpm, quantize, scheduler }) {
+export function createSample ({ id, audioContext, group, bpm, quantize, scheduler }) {
   group = writable(group)
   const STEP_COUNT = 16
   const buffer = writable(null)
@@ -27,7 +29,7 @@ export function createSample ({ id, group, bpm, quantize, scheduler }) {
     buffer,
     ($buffer) => $buffer && reverseBuffer($buffer)
   )
-  const duration = derived(buffer, $buffer => $buffer?.duration)
+  const duration = derived(buffer, $buffer => $buffer?.duration || 0)
   const octave = writable(0)
   const reverse = writable(false)
   const startStep = writable(0)
@@ -114,17 +116,31 @@ export function createSample ({ id, group, bpm, quantize, scheduler }) {
   bpm.subscribe($bpm => scheduler.bpm = $bpm)
   quantize.subscribe($quantize => scheduler.quantize = $quantize)
 
+  let source
+  let playhead
+  let sourceId
+  loopStart.subscribe(value => source && (source.loopStart = value))
+  loopEnd.subscribe(value => source && (source.loopEnd = value))
+  loop.subscribe(value => source && (source.loop = value))
+  speed.subscribe(value => source && (source.playbackRate.value = value))
+
   function start (step) {
-    if (!attrs.buffer || !validStep(step)) return
+    const { buffer, offset } = attrs
+    if (!buffer || !validStep(step)) return
+
     scheduler.schedule(function () {
       startStep.set(transpose(step))
-      attrs.group.play(attrs.reverse ? attrs.reffub : attrs.buffer, attrs.offset, sample)
+      sourceId = +new Date()
+      source = createBufferSource()
+      // ensure the correct id is passed
+      source.onended = ((id) => () => deactivate(id))(sourceId)
+      attrs.group.play(source, offset, sample)
+
+      playhead = createPlayhead(source, progress.set)
+      playhead.start(offset)
+
       playing.set(true)
     })
-  }
-
-  function stop () {
-    playing.set(false)
   }
 
   function resetLoopPoints () {
@@ -154,7 +170,22 @@ export function createSample ({ id, group, bpm, quantize, scheduler }) {
     return reverse ? Math.abs(step - (enabledStepCount - 1)) : step
   }
 
-  const sample = { id, ...settings, start, stop, resetLoopPoints, loopBetween }
+  function createBufferSource () {
+    const { buffer, reffub, reverse, loopStart, loopEnd, loop, speed } = attrs
+    const source = audioContext.createBufferSource()
+    if (buffer) source.buffer = reverse ? reffub : buffer
+    source.loopStart = loopStart
+    source.loopEnd = loopEnd
+    source.loop = loop
+    source.playbackRate.value = speed
+    return source
+  }
+
+  function deactivate (id) {
+    if (!id || sourceId === id) playing.set(false)
+  }
+
+  const sample = { id, ...settings, start, resetLoopPoints, loopBetween }
 
   return sample
 }

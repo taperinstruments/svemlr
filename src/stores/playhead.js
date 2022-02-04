@@ -2,7 +2,7 @@
  * @param {AudioBufferSourceNode} source
  * @param {Function} callback
  */
-export function createPlay (source, callback) {
+export function createPlayhead (source, callback) {
   let elapsed
   let elapsedCheckedAt
   let timer
@@ -12,14 +12,14 @@ export function createPlay (source, callback) {
     elapsed = offset
     callback(progress())
     elapsedCheckedAt = currentTime()
-    timer = setInterval(trackProgress, 1000 / 60)
+    timer = setInterval(check, 1000 / 60)
   }
 
   function stop () {
     clearInterval(timer)
   }
 
-  function trackProgress () {
+  function check () {
     const now = currentTime()
     const durationSinceCheck = now - elapsedCheckedAt
     elapsed += durationSinceCheck * speed()
@@ -47,10 +47,6 @@ export function createPlay (source, callback) {
     return source.loopEnd || duration()
   }
 
-  function loopDuration () {
-    return loopEnd() - loopStart()
-  }
-
   function loop () {
     return source.loop
   }
@@ -63,5 +59,5 @@ export function createPlay (source, callback) {
     return Math.min(elapsed / duration(), 1)
   }
 
-  return { start, stop }
+  return { start, check }
 }
