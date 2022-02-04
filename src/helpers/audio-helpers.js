@@ -26,3 +26,16 @@ export function reverseBuffer (buffer) {
 
   return reversed
 }
+
+export function createBufferSource (buffer, audioContext, options) {
+  const source = audioContext.createBufferSource()
+  if (buffer) source.buffer = buffer
+
+  const { loopStart, loopEnd, loop, speed } = options
+  source.loop = !!loop
+  if (loopStart != null) source.loopStart = loopStart
+  if (loopEnd != null) source.loopEnd = loopEnd
+  if (speed != null) source.playbackRate.value = speed
+
+  return source
+}

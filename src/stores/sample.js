@@ -1,6 +1,6 @@
 import { writable, derived } from 'svelte/store'
 import { arrayOf } from '../helpers/array-helpers'
-import { reverseBuffer } from '../helpers/audio-helpers'
+import { reverseBuffer, createBufferSource } from '../helpers/audio-helpers'
 import { createPlayhead } from './playhead'
 
 export let samples = []
@@ -118,7 +118,6 @@ export function createSample ({ id, audioContext, group, bpm, quantize, schedule
 
   let source
   let playhead
-  let sourceId
   loopStart.subscribe(value => source && (source.loopStart = value))
   loopEnd.subscribe(value => source && (source.loopEnd = value))
   loop.subscribe(value => source && (source.loop = value))
@@ -129,11 +128,8 @@ export function createSample ({ id, audioContext, group, bpm, quantize, schedule
 
     scheduler.schedule(function () {
       startStep.set(transpose(step))
-      sourceId = +new Date()
-      source = createBufferSource()
-      // ensure the correct id is passed
-      source.onended = ((id) => () => deactivate(id))(sourceId)
-      attrs.group.play(source, attrs.offset, sample)
+      source = setupSource()
+      attrs.group.play(source, attrs.offset)
 
       playhead = createPlayhead(source, progress.set)
       playhead.start(attrs.offset)
@@ -169,14 +165,17 @@ export function createSample ({ id, audioContext, group, bpm, quantize, schedule
     return reverse ? Math.abs(step - (enabledStepCount - 1)) : step
   }
 
-  function createBufferSource () {
-    const { buffer, reffub, reverse, loopStart, loopEnd, loop, speed } = attrs
-    const source = audioContext.createBufferSource()
-    if (buffer) source.buffer = reverse ? reffub : buffer
-    source.loopStart = loopStart
-    source.loopEnd = loopEnd
-    source.loop = loop
-    source.playbackRate.value = speed
+  let sourceId
+  function setupSource () {
+    const { reverse, buffer, reffub, loop, loopStart, loopEnd, speed } = attrs
+    sourceId = +new Date()
+    source = createBufferSource(
+      reverse ? reffub : buffer,
+      audioContext,
+      { loop, loopStart, loopEnd, speed }
+    )
+    // ensure the correct id is passed
+    source.onended = ((id) => () => deactivate(id))(sourceId)
     return source
   }
 
