@@ -18,7 +18,7 @@ export function createGroup ({ id, audioContext }) {
   const gain = derived([level, muted], ([$lvl, $muted]) => $muted ? 0 : $lvl)
   gain.subscribe(value => node.gain.value = value)
 
-  function play (source, offset, sample) {
+  function play (source, offset) {
     stop()
     currentSource = source
     source.connect(node)
