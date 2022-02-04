@@ -22,8 +22,6 @@
 	} = sample
 
 	export let groups = []
-	let groupIndex = groups.indexOf($group)
-	$: group.set(groups[groupIndex])
 	$: stepCount = $steps.length
 
 	export let monome = {}
@@ -34,9 +32,8 @@
 	let file
 	$: if (file) fileToAudioBuffer(file, audioContext).then(b => $buffer = b)
 
-	// start sample from radio button press
 	function jumpStart (event) {
-		event.preventDefault() // prevent error when setting currentStep
+		event.preventDefault() // do not set currentStep to prevent error
 		start(Number(event.target.value))
 	}
 </script>
@@ -67,8 +64,8 @@
 	</td>
 
 	<td>
-		{#each groups as _, i}
-			<input name="sample_{id}_group" type="radio" value={i} bind:group={groupIndex} autocomplete="off">
+		{#each groups as grp}
+			<input name="sample_{id}_group" type="radio" value={grp} bind:group={$group} autocomplete="off">
 		{/each}
 	</td>
 </tr>
