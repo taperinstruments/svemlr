@@ -1,27 +1,21 @@
 import { writable, derived } from 'svelte/store'
 import { arrayOf } from '../helpers/array-helpers'
 import { reverseBuffer, createBufferSource } from '../helpers/audio-helpers'
-import { createPlayhead } from './playhead'
+import { Playhead } from './playhead'
 
-export let samples = []
-
-export function createSamples (count, options) {
-  return samples = arrayOf(count, i => createSample({ id: i, ...options }))
-}
+export const samples = []
 
 /**
- *
  * @param {{
  *  id: number,
  *  audioContext: AudioContext,
  *  group: object,
  *  bpm: import('svelte/store').Writable,
- *  quantize: import('svelte/store').Writable,
  *  scheduler: object
  * }} options
  * @returns {object}
  */
-export function createSample ({ id, audioContext, group, bpm, quantize, scheduler }) {
+export function Sample ({ id, audioContext, group, bpm, scheduler }) {
   group = writable(group)
   const STEP_COUNT = 16
   const buffer = writable(null)
@@ -113,9 +107,6 @@ export function createSample ({ id, audioContext, group, bpm, quantize, schedule
     settings[key].subscribe(value => attrs[key] = value)
   }
 
-  bpm.subscribe($bpm => scheduler.bpm = $bpm)
-  quantize.subscribe($quantize => scheduler.quantize = $quantize)
-
   let source
   let playhead
   loopStart.subscribe(value => {
@@ -143,7 +134,7 @@ export function createSample ({ id, audioContext, group, bpm, quantize, schedule
       source = setupSource()
       attrs.group.play(source, attrs.offset)
 
-      playhead = createPlayhead(source, progress.set)
+      playhead = Playhead(source, progress.set)
       playhead.start(attrs.offset)
 
       playing.set(true)
@@ -195,7 +186,11 @@ export function createSample ({ id, audioContext, group, bpm, quantize, schedule
     if (!id || sourceId === id) playing.set(false)
   }
 
-  const sample = { id, ...settings, start, resetLoopPoints, loopBetween }
-
-  return sample
+  return {
+    id,
+    ...settings,
+    start,
+    resetLoopPoints,
+    loopBetween
+  }
 }

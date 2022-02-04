@@ -2,7 +2,7 @@
  * @param {AudioBufferSourceNode} source
  * @param {Function} callback
  */
-export function createPlayhead (source, callback) {
+export function Playhead (source, callback) {
   let elapsed
   let elapsedCheckedAt
   let timer

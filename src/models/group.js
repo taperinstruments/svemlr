@@ -1,13 +1,8 @@
 import { writable, derived } from 'svelte/store'
-import { arrayOf } from '../helpers/array-helpers'
 
-export let groups = []
+export const groups = []
 
-export function createGroups (count, audioContext) {
-  return groups = arrayOf(count, i => createGroup({ id: i, audioContext }))
-}
-
-export function createGroup ({ id, audioContext }) {
+export function Group ({ id, audioContext }) {
   let currentSource
   const node = audioContext.createGain()
   node.connect(audioContext.destination)

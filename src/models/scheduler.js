@@ -1,6 +1,6 @@
 import WAAClock from 'waaclock'
 
-export function createScheduler({ audioContext, bpm, quantize }) {
+export function Scheduler({ audioContext, bpm, quantize }) {
   let clock = new WAAClock(audioContext)
   let callbacks = []
   let started = false
