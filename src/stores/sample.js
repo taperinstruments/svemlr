@@ -125,8 +125,7 @@ export function createSample ({ id, audioContext, group, bpm, quantize, schedule
   speed.subscribe(value => source && (source.playbackRate.value = value))
 
   function start (step) {
-    const { buffer, offset } = attrs
-    if (!buffer || !validStep(step)) return
+    if (!attrs.buffer || !validStep(step)) return
 
     scheduler.schedule(function () {
       startStep.set(transpose(step))
@@ -134,10 +133,10 @@ export function createSample ({ id, audioContext, group, bpm, quantize, schedule
       source = createBufferSource()
       // ensure the correct id is passed
       source.onended = ((id) => () => deactivate(id))(sourceId)
-      attrs.group.play(source, offset, sample)
+      attrs.group.play(source, attrs.offset, sample)
 
       playhead = createPlayhead(source, progress.set)
-      playhead.start(offset)
+      playhead.start(attrs.offset)
 
       playing.set(true)
     })
