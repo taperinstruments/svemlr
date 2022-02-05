@@ -26,7 +26,6 @@ export function Sample ({ id, audioContext, group, bpm, scheduler }) {
   const duration = derived(buffer, $buffer => $buffer?.duration || 0)
   const octave = writable(0)
   const reverse = writable(false)
-  const startStep = writable(0)
   const loopStartStep = writable(0)
   const loopEndStep = writable()
   const enabledStepCount = writable(16)
@@ -34,10 +33,6 @@ export function Sample ({ id, audioContext, group, bpm, scheduler }) {
     enabledStepCount,
     $enabledStepCount =>
       arrayOf(STEP_COUNT, i => ({ enabled: i < $enabledStepCount }))
-  )
-  const enabledSteps = derived(
-    steps,
-    $steps => $steps.filter(({ enabled }) => enabled)
   )
   const stepDuration = derived(bpm, $bpm => 60 / $bpm)
   const stepsDuration = derived(
@@ -56,11 +51,6 @@ export function Sample ({ id, audioContext, group, bpm, scheduler }) {
     ([$duration, $stepsDuration, $octave]) =>
       $duration ? ($duration / $stepsDuration) * Math.pow(2, $octave) : 1
   )
-  const offset = derived(
-    [duration, enabledStepCount, startStep],
-    ([$duration, $enabledStepCount, $startStep]) =>
-      ($duration / $enabledStepCount) * $startStep
-  )
   const loopStart = derived(
     [duration, enabledStepCount, loopStartStep],
     ([$duration, $enabledStepCount, $loopStartStep]) =>
@@ -72,10 +62,6 @@ export function Sample ({ id, audioContext, group, bpm, scheduler }) {
       ($duration / $enabledStepCount) *
         ($loopEndStep != null ? $loopEndStep : $enabledStepCount)
   )
-  const loopDuration = derived(
-    [loopStart, loopEnd],
-    ([$loopStart, $loopEnd]) => $loopEnd - $loopStart
-  )
   const loop = derived(loopStart, $loopStart => $loopStart != null)
 
   const settings = {
@@ -86,9 +72,7 @@ export function Sample ({ id, audioContext, group, bpm, scheduler }) {
 
     enabledStepCount,
     steps,
-    enabledSteps,
     currentStep,
-    offset,
 
     octave,
     speed,
@@ -96,7 +80,6 @@ export function Sample ({ id, audioContext, group, bpm, scheduler }) {
 
     loopStart,
     loopEnd,
-    loopDuration,
     loop,
 
     progress
@@ -128,17 +111,19 @@ export function Sample ({ id, audioContext, group, bpm, scheduler }) {
 
   function start (step) {
     if (!attrs.buffer || !validStep(step)) return
-
     scheduler.schedule(function () {
-      startStep.set(transpose(step))
-      source = setupSource()
-      attrs.group.play(source, attrs.offset)
-
-      playhead = Playhead(source, progress.set)
-      playhead.start(attrs.offset)
-
-      playing.set(true)
+      startAt(offset(transpose(step)))
     })
+  }
+
+  function startAt (offset) {
+    source = setupSource()
+    attrs.group.play(source, offset)
+
+    playhead = Playhead(source, progress.set)
+    playhead.start(offset)
+
+    playing.set(true)
   }
 
   function resetLoopPoints () {
@@ -152,6 +137,11 @@ export function Sample ({ id, audioContext, group, bpm, scheduler }) {
     const { reverse } = attrs
     loopStartStep.set(reverse ? steps[1] : steps[0])
     loopEndStep.set(reverse ? steps[0] : steps[1])
+  }
+
+  function offset (step) {
+    const { duration, enabledStepCount } = attrs
+    return (duration / enabledStepCount) * step
   }
 
   function validStep (step) {

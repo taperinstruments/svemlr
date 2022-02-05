@@ -11,7 +11,6 @@
 		id,
 		steps,
 		enabledStepCount,
-		enabledSteps,
 		currentStep,
 		octave,
 		speed,
@@ -26,7 +25,7 @@
 
 	export let monome = {}
 	$: y = id + 1
-	$: gridLedRow(monome, y, $enabledSteps.map((step, i) => i === $currentStep))
+	$: gridLedRow(monome, y, $steps.map((_, i) => i === $currentStep))
 
 	export let files = {}
 	let file
