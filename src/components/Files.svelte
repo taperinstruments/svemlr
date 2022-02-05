@@ -1,7 +1,7 @@
 <script>
   export let files
   let newFiles
-  $: files.update($files => [...$files, ...(newFiles || [])])
+  $: files.add(newFiles)
 </script>
 
 <section>

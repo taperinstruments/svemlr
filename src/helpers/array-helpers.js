@@ -13,3 +13,13 @@ export function chunk (array, size) {
   while (i < n) chunks.push(array.slice(i, i += size))
   return chunks
 }
+
+export function uniqueBy (array, predicate) {
+  return array.reduce((memo, current) => {
+    const value = predicate(current)
+    if (!memo.find((item) => predicate(item) === value)) {
+      memo.push(current)
+    }
+    return memo
+  }, [])
+}
