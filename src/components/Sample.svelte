@@ -50,7 +50,7 @@
 		<input type="range" bind:value={$enabledStepCount} min="1" max={stepCount} step="1" />
 	</td>
 	<td>
-		<span>{$octave}</span>
+		<span>{$octave >= 0 ? '+' : ''}{$octave}</span>
 		<button on:click={() => --$octave} aria-label="Decrement octave">-</button>
 		<button on:click={() => ++$octave} aria-label="Increment octave">+</button>
 	</td>
