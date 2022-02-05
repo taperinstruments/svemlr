@@ -2,11 +2,24 @@
   export let files
   let newFiles
   $: files.add(newFiles)
+
+  function drop (event) {
+    event.preventDefault()
+    files.add(
+      Array.from(event.dataTransfer.items).reduce((memo, current) => {
+        if (current.kind === 'file') {
+          const file = current.getAsFile()
+          if (/^(audio|video)/.test(file.type)) memo.push(file)
+        }
+        return memo
+      }, [])
+    )
+  }
 </script>
 
 <section>
   <label for="files">Audio file drop</label>
-  <div class="file-drop">
+  <div class="file-drop" on:drop={drop} on:dragover={e => e.preventDefault()}>
     <input accept="audio/*" bind:files={newFiles} id="files" name="files" type="file" />
 
     {#if $files.length}
