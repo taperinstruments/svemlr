@@ -59,5 +59,5 @@ export function Playhead (source, callback) {
     return Math.min(elapsed / duration(), 1)
   }
 
-  return { start, check }
+  return { start, stop, check }
 }

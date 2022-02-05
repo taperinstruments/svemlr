@@ -82,6 +82,7 @@ export function Sample ({ id, audioContext, group, bpm, scheduler }) {
     loopEnd,
     loop,
 
+    playing,
     progress
   }
 
@@ -109,6 +110,11 @@ export function Sample ({ id, audioContext, group, bpm, scheduler }) {
     playhead?.check()
   })
 
+  reverse.subscribe(() => {
+    const { playing, duration, progress } = attrs
+    if (playing) startAt((1 - progress) * duration)
+  })
+
   function start (step) {
     if (!attrs.buffer || !validStep(step)) return
     scheduler.schedule(function () {
@@ -120,6 +126,7 @@ export function Sample ({ id, audioContext, group, bpm, scheduler }) {
     source = setupSource()
     attrs.group.play(source, offset)
 
+    playhead?.stop()
     playhead = Playhead(source, progress.set)
     playhead.start(offset)
 
