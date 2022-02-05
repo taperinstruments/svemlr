@@ -161,7 +161,7 @@ export function Sample ({ id, audioContext, group, bpm, scheduler }) {
   let sourceId
   function setupSource () {
     const { reverse, buffer, reffub, loop, loopStart, loopEnd, speed } = attrs
-    sourceId = +new Date()
+    sourceId = +new Date() + Math.random()
     source = createBufferSource(
       reverse ? reffub : buffer,
       audioContext,
