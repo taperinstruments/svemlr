@@ -1,3 +1,4 @@
+import { tick } from 'svelte'
 import { writable, derived } from 'svelte/store'
 import { arrayOf } from '../helpers/array-helpers'
 import { reverseBuffer, createBufferSource } from '../helpers/audio-helpers'
@@ -113,6 +114,15 @@ export function Sample ({ id, audioContext, group, bpm, scheduler }) {
   reverse.subscribe(() => {
     const { playing, duration, progress } = attrs
     if (playing) startAt((1 - progress) * duration)
+  })
+
+  duration.subscribe(async $duration => {
+    const { playing, progress } = attrs
+    if (playing) {
+      playhead?.check()
+      await tick()
+      startAt(progress * $duration)
+    }
   })
 
   function start (step) {
