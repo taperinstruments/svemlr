@@ -56,7 +56,8 @@ export function Playhead (source, callback) {
   }
 
   function progress () {
-    return Math.min(elapsed / duration(), 1)
+    // use -Number.MIN_VALUE to prevent progress spilling over
+    return Math.min((elapsed / duration()) - Number.MIN_VALUE, 1)
   }
 
   return { start, stop, check }
