@@ -8,6 +8,7 @@ import { bpm, quantize } from './models/time'
 import { Scheduler } from './models/scheduler'
 import { Group, groups } from './models/group'
 import { Sample, samples } from './models/sample'
+import { Pattern, patterns } from './models/pattern'
 
 const audioContext = new AudioContext()
 const scheduler = Scheduler({
@@ -21,6 +22,7 @@ quantize.subscribe($quantize => scheduler.quantize = $quantize)
 
 models(4, Group, groups, { audioContext })
 models(7, Sample, samples, { audioContext, group: groups[0], bpm, scheduler })
+models(2, Pattern, patterns, { bpm, scheduler, router })
 
 const app = new App({
   target: document.getElementById('app'),
@@ -30,7 +32,8 @@ const app = new App({
     bpm,
     quantize,
     groups,
-    samples
+    samples,
+    patterns
   },
   context: new Map([['audioContext', audioContext]])
 })

@@ -15,5 +15,11 @@ export default {
     } else if (keyDowns.length === 2) {
       sample.loopBetween(keyDowns)
     }
+  },
+
+  replay ({ x, y }) {
+    const sample = samples[y - 1]
+    sample.resetLoopPoints()
+    sample.start(x)
   }
 }

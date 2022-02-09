@@ -7,6 +7,7 @@
 	import GroupActive from './components/GroupActive.svelte'
 	import Time from './components/Time.svelte'
 	import Strip from './components/Strip.svelte'
+	import Pattern from './components/Pattern.svelte'
 
 	const audioContext = getContext('audioContext')
 
@@ -16,6 +17,7 @@
 	export let quantize = {}
 	export let groups = []
 	export let samples = []
+	export let patterns = []
 
 	let monome
 	const grid = promise()
@@ -34,9 +36,21 @@
 	{/if}
 
 	{#await grid.promise then monome}
-		{#each groups as group}
-			<GroupActive {monome} {group} />
-		{/each}
+		<div class="top-row">
+			<fieldset>
+				<legend>groups</legend>
+				{#each groups as group}
+					<GroupActive {monome} {group} />
+				{/each}
+			</fieldset>
+
+			<fieldset>
+				<legend>patterns</legend>
+				{#each patterns as pattern}
+					<Pattern {pattern} {monome} />
+				{/each}
+			</fieldset>
+		</div>
 
 		<section class="samples">
 			<table>

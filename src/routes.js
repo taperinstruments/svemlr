@@ -4,14 +4,18 @@ import groups from './controllers/groups-controller'
 import patterns from './controllers/patterns-controller'
 
 route(
-  ({ y, state }) => state && y > 0,
-  samples.loop
+  ({ y, state, source }) => y > 0 && source === 'press' && state,
+  [samples.loop, patterns.record],
 )
 route(
-  ({ x, y, state }) => state && x < 4 && y === 0,
+  ({ y, state, source }) => y > 0 && source === 'pattern' && state,
+  [samples.replay],
+)
+route(
+  ({ x, y, state }) => y === 0 && x < 4 && state,
   groups.stop
 )
 route(
-  ({ x, y }) => (x == 4 || x == 5) && y == 0,
-  patterns.record
+  ({ x, y, state }) => y == 0 && (x == 4 || x == 5) && state,
+  patterns.toggle
 )

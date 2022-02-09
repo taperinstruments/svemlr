@@ -16,7 +16,7 @@ export function start (device) {
   )
 }
 
-function handle ({ x, y, state, source }) {
+export function handle ({ x, y, state, source }) {
   if (source === 'press') grid[y][x] = Number(state)
 
   const route = findRoute(x, y, state, source)
