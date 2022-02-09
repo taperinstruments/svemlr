@@ -15,7 +15,14 @@ export function start (device) {
 function handle ({ x, y, state }) {
   grid[y][x] = Number(state)
   const route = findRoute(x, y, state)
-  route?.handler({ x, y, state, grid })
+  if (!route) return
+
+  const args = { x, y, state, grid }
+  if (Array.isArray(route.handler)) {
+    route.handler.forEach(fn => fn(args))
+  } else {
+    route.handler(args)
+  }
 }
 
 function findRoute (x, y, state) {
