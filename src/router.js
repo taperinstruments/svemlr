@@ -8,13 +8,18 @@ export function route (matcher, handler) {
 }
 
 export function start (device) {
-  device.on('gridKeyDown', ({ x, y }) => handle({ x, y, state: 1 }))
-  device.on('gridKeyUp', ({ x, y }) => handle({ x, y, state: 0 }))
+  device.on('gridKeyDown', ({ x, y }) =>
+    handle({ x, y, state: 1, source: 'press' })
+  )
+  device.on('gridKeyUp', ({ x, y }) =>
+    handle({ x, y, state: 0, source: 'press' })
+  )
 }
 
-function handle ({ x, y, state }) {
-  grid[y][x] = Number(state)
-  const route = findRoute(x, y, state)
+function handle ({ x, y, state, source }) {
+  if (source === 'press') grid[y][x] = Number(state)
+
+  const route = findRoute(x, y, state, source)
   if (!route) return
 
   const args = { x, y, state, grid }
@@ -25,6 +30,6 @@ function handle ({ x, y, state }) {
   }
 }
 
-function findRoute (x, y, state) {
-  return routes.find(({ matcher }) => matcher({ x, y, state }))
+function findRoute (x, y, state, source) {
+  return routes.find(({ matcher }) => matcher({ x, y, state, source }))
 }
