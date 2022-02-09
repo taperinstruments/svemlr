@@ -22,8 +22,14 @@ export function Scheduler({ audioContext, bpm, quantize }) {
     started = false
   }
 
-  function schedule (fn, args) {
-    callbacks.push({ fn, args })
+  function schedule (fn, args = [], options = {}) {
+    if (options.in != null) {
+      let event = clock.setTimeout(() => fn.apply(null, args), options.in)
+      if (options.repeat) event = event.repeat(options.repeat)
+      return event
+    } else {
+      callbacks.push({ fn, args })
+    }
   }
 
   function handleTick () {
