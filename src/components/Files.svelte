@@ -5,15 +5,17 @@
 
   function drop (event) {
     event.preventDefault()
-    files.add(
-      Array.from(event.dataTransfer.items).reduce((memo, current) => {
-        if (current.kind === 'file') {
-          const file = current.getAsFile()
-          if (/^(audio|video)/.test(file.type)) memo.push(file)
-        }
-        return memo
-      }, [])
-    )
+    files.add(mediaFiles([...event.dataTransfer.items]))
+  }
+
+  function mediaFiles (dataTransferItems) {
+    return dataTransferItems.reduce((memo, current) => {
+      if (current.kind === 'file') {
+        const file = current.getAsFile()
+        if (/^(audio|video)/.test(file.type)) memo.push(file)
+      }
+      return memo
+    }, [])
   }
 </script>
 
