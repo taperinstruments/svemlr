@@ -30,11 +30,6 @@
 	export let files = {}
 	let file
 	$: if (file) fileToAudioBuffer(file, audioContext).then(b => $buffer = b)
-
-	function jumpStart (event) {
-		event.preventDefault() // do not set currentStep to prevent error
-		start(Number(event.target.value))
-	}
 </script>
 
 <tr>
@@ -44,10 +39,21 @@
 	<td>
 		<div>
 			{#each $steps as step, i}
-				<input name="sample_{id}_step" type="radio" value={i} disabled={!step.enabled} on:click={jumpStart} bind:group={$currentStep} autocomplete="off">
+				<input
+					name="sample_{id}_step"
+					type="radio" value={i}
+					checked={$currentStep == i}
+					disabled={!step.enabled}
+					on:click|preventDefault={() => start(i)}
+					autocomplete="off">
 			{/each}
 		</div>
-		<input type="range" bind:value={$enabledStepCount} min="1" max={stepCount} step="1" />
+		<input
+			type="range"
+			bind:value={$enabledStepCount}
+			min="1"
+			max={stepCount}
+			step="1">
 	</td>
 	<td>
 		<span>{$octave >= 0 ? '+' : ''}{$octave}</span>
@@ -64,12 +70,20 @@
 
 	<td>
 		{#each groups as grp}
-			<input name="sample_{id}_group" type="radio" value={grp} bind:group={$group} autocomplete="off">
+			<input
+				name="sample_{id}_group"
+				type="radio"
+				value={grp}
+				bind:group={$group}
+				autocomplete="off">
 		{/each}
 	</td>
 </tr>
 
 <style>
+	td {
+		white-space: nowrap;
+	}
 	[type="range"] {
 		margin: 0;
 		width: 100%;
