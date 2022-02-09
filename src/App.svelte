@@ -78,11 +78,16 @@
 			<Strip {level} {muted} />
 		{/each}
 	{/await}
+
 </main>
 
 <style>
 	* {
 		accent-color: orange;
+	}
+
+	.top-row {
+		display: flex;
 	}
 	.samples {
 		display: flex;
