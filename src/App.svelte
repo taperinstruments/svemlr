@@ -4,9 +4,8 @@
 	import WebMonome from 'webmonome'
 	import Sample from './components/Sample.svelte'
 	import Files from './components/Files.svelte'
-	import GroupActive from './components/GroupActive.svelte'
+	import Group from './components/Group.svelte'
 	import Time from './components/Time.svelte'
-	import Strip from './components/Strip.svelte'
 	import Pattern from './components/Pattern.svelte'
 
 	const audioContext = getContext('audioContext')
@@ -36,22 +35,6 @@
 	{/if}
 
 	{#await grid.promise then monome}
-		<div class="top-row">
-			<fieldset>
-				<legend>groups</legend>
-				{#each groups as group}
-					<GroupActive {monome} {group} />
-				{/each}
-			</fieldset>
-
-			<fieldset>
-				<legend>patterns</legend>
-				{#each patterns as pattern}
-					<Pattern {pattern} {monome} />
-				{/each}
-			</fieldset>
-		</div>
-
 		<section class="samples">
 			<table>
 				<thead>
@@ -74,16 +57,40 @@
 
 		<Time {bpm} {quantize} />
 
-		{#each groups as { level, muted }}
-			<Strip {level} {muted} />
-		{/each}
+		<fieldset>
+			<legend>Patterns</legend>
+			{#each patterns as pattern}
+				<Pattern {pattern} {monome} />
+			{/each}
+		</fieldset>
+
+		<fieldset>
+			<legend>Groups</legend>
+			{#each groups as group}
+				<Group {monome} {group} />
+			{/each}
+		</fieldset>
 	{/await}
 
 </main>
 
 <style>
+	:global(input[type="checkbox"]) {
+		margin: 0;
+	}
 	* {
 		accent-color: orange;
+	}
+
+	fieldset {
+		border: 0;
+		margin: 0;
+		padding: 0;
+		margin-top: .5rem;
+	}
+
+	legend {
+		font-weight: 700;
 	}
 
 	.top-row {

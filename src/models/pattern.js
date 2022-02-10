@@ -17,15 +17,15 @@ export function Pattern ({ id, bpm, scheduler, router }) {
   const active = derived([recordable, playing],
     ([$recordable, $playing]) => $recordable || $playing
   )
-  const beats = writable(4)
-  const duration = derived([bpm, beats],
-    ([$bpm, $beats]) => (60 / $bpm) * $beats
+  const length = writable(8)
+  const duration = derived([bpm, length],
+    ([$bpm, $length]) => (60 / $bpm) * $length
   )
   let onactivity = () => {}
   let events = []
   let currentPlay = null
 
-  const settings = { recordable, playing, active, beats, duration }
+  const settings = { recordable, playing, active, length, duration }
   const attrs = {}
   for (const key in settings) {
     settings[key].subscribe(value => attrs[key] = value)
@@ -81,6 +81,7 @@ export function Pattern ({ id, bpm, scheduler, router }) {
     recordable,
     playing,
     active,
+    length,
     set onactivity (fn) {
       onactivity = fn
     }
