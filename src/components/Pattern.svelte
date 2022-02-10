@@ -1,13 +1,13 @@
 <script>
   import { groups } from '../models/group'
-  import { blink } from '../helpers/monome-helpers'
   export let pattern = {}
   export let monome
   let { id, active, toggle, length } = pattern
   const x = id + groups.length
 
   pattern.onactivity = () => {
-    blink(monome, x, 0, 1)
+    monome.gridLed(x, 0, 0)
+    setTimeout(() => $active && monome.gridLed(x, 0, 1), 50)
   }
   $: monome.gridLed(x, 0, $active)
 </script>
