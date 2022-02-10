@@ -10,3 +10,9 @@
     </option>
   {/each}
 </select>
+
+<style>
+  select {
+    width: 12rem;
+  }
+</style>

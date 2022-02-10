@@ -82,10 +82,11 @@
 
 <style>
 	td {
+		vertical-align: top;
 		white-space: nowrap;
 	}
-	[type="range"] {
-		margin: 0;
+
+	[type=range] {
 		width: 100%;
 	}
 </style>

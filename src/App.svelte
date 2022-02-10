@@ -38,7 +38,7 @@
 		<section class="samples">
 			<table>
 				<thead>
-					<th></th>
+					<th>File</th>
 					<th></th>
 					<th>Octave</th>
 					<th>Speed</th>
