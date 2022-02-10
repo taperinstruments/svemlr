@@ -31,6 +31,9 @@
 
 <main>
 	{#if !monome}
+		<p>Before you start, svemlr requires that <strong>serialosc is disabled</strong>. On macOS open Terminal and execute:</p>
+		<pre><code>launchctl unload /Library/LaunchAgents/org.monome.serialosc.plist</code></pre>
+		<p>To re-enable: <code>launchctl load /Library/LaunchAgents/org.monome.serialosc.plist</code></p>
 		<button on:click={connect}>Connect</button>
 	{/if}
 
@@ -75,11 +78,27 @@
 </main>
 
 <style>
+	:global(*) {
+		accent-color: orange;
+	}
+
 	:global(input[type="checkbox"]) {
 		margin: 0;
 	}
-	* {
-		accent-color: orange;
+
+	pre {
+		padding: .5rem;
+		font-family: 'Oxygen Mono', monospace;
+		background-color: whitesmoke;
+	}
+
+	pre,
+	code {
+		background-color: whitesmoke;
+	}
+
+	code {
+		padding: .25rem;
 	}
 
 	fieldset {
