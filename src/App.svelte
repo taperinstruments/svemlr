@@ -90,12 +90,10 @@
 	}
 
 	legend {
+		padding: 0;
 		font-weight: 700;
 	}
 
-	.top-row {
-		display: flex;
-	}
 	.samples {
 		display: flex;
 	}

@@ -3,7 +3,7 @@
 	export let quantize
 
 	const quantizeOptions = [128, 64, 32, 16, 8, 4, 2]
-	
+
 	function adjustBpm (value) {
 		bpm.update(n => n + value)
 	}
@@ -22,3 +22,9 @@
 		<option value="{option}">1/{option}</option>
 	{/each}
 </select>
+
+<style>
+	#tempo {
+		width: 4rem;
+	}
+</style>
