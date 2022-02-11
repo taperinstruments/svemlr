@@ -1,7 +1,14 @@
 <script>
 	import { getContext } from 'svelte'
 	import { promise } from './helpers/promise-helpers'
+	import { gridSize } from './helpers/monome-helpers'
 	import WebMonome from 'webmonome'
+
+	import { models } from './helpers/model-helpers'
+	import { Group as Grp, groups } from './models/group'
+	import { Sample as Smpl, samples } from './models/sample'
+	import { Pattern as Ptrn, patterns } from './models/pattern'
+
 	import Sample from './components/Sample.svelte'
 	import Files from './components/Files.svelte'
 	import Group from './components/Group.svelte'
@@ -14,9 +21,7 @@
 	export let files = {}
 	export let bpm = {}
 	export let quantize = {}
-	export let groups = []
-	export let samples = []
-	export let patterns = []
+	export let scheduler = {}
 
 	let monome
 	const grid = promise()
@@ -25,6 +30,18 @@
 		audioContext.resume()
 		try {
 			monome = await WebMonome.connect()
+			const { x, y } = await gridSize(monome)
+
+			models(4, Grp, groups, { audioContext })
+			models(y - 1, Smpl, samples, {
+				audioContext,
+				group: groups[0],
+				stepCount: x,
+				bpm,
+				scheduler
+			})
+			models(2, Ptrn, patterns, { bpm, scheduler, router })
+
 			router.start(monome)
 			grid.resolve(monome)
 		} catch (e) {

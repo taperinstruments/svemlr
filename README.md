@@ -2,7 +2,7 @@
 a port of [mlr](https://github.com/monome-community/mlr) for the web (just chromium-based browsers for now e.g. chrome, edge).
 
 ## compatibility
-svemlr has been tested on the latest monome grid (128). it should be compatible with older devices (excluding 40h), once [this issue](https://github.com/taperinstruments/svemlr/issues/22) is fixed.
+svemlr has been tested on the latest monome grid 128 and a walnut 64.
 
 it also requires that **serialosc is disabled**. on macos open terminal and execute:
 ```

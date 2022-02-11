@@ -1,14 +1,10 @@
 import { get } from 'svelte/store'
-import { models } from './helpers/model-helpers'
 import App from './App.svelte'
 import * as router from './router.js'
 import './routes.js'
 import { files } from './models/files'
 import { bpm, quantize } from './models/time'
 import { Scheduler } from './models/scheduler'
-import { Group, groups } from './models/group'
-import { Sample, samples } from './models/sample'
-import { Pattern, patterns } from './models/pattern'
 
 const audioContext = new AudioContext()
 const scheduler = Scheduler({
@@ -20,10 +16,6 @@ scheduler.start()
 bpm.subscribe($bpm => scheduler.bpm = $bpm)
 quantize.subscribe($quantize => scheduler.quantize = $quantize)
 
-models(4, Group, groups, { audioContext })
-models(7, Sample, samples, { audioContext, group: groups[0], bpm, scheduler })
-models(2, Pattern, patterns, { bpm, scheduler, router })
-
 const app = new App({
   target: document.getElementById('app'),
   props: {
@@ -31,9 +23,7 @@ const app = new App({
     files,
     bpm,
     quantize,
-    groups,
-    samples,
-    patterns
+    scheduler
   },
   context: new Map([['audioContext', audioContext]])
 })

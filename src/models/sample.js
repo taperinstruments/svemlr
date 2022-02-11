@@ -11,14 +11,14 @@ export const samples = []
  *  id: number,
  *  audioContext: AudioContext,
  *  group: object,
+ *  stepCount: number,
  *  bpm: import('svelte/store').Writable,
  *  scheduler: object
  * }} options
  * @returns {object}
  */
-export function Sample ({ id, audioContext, group, bpm, scheduler }) {
+export function Sample ({ id, audioContext, group, stepCount, bpm, scheduler }) {
   group = writable(group)
-  const STEP_COUNT = 16
   const buffer = writable(null)
   const reffub = derived(
     buffer,
@@ -29,11 +29,11 @@ export function Sample ({ id, audioContext, group, bpm, scheduler }) {
   const reverse = writable(false)
   const loopStartStep = writable(0)
   const loopEndStep = writable()
-  const enabledStepCount = writable(16)
+  const enabledStepCount = writable(stepCount)
   const steps = derived(
     enabledStepCount,
     $enabledStepCount =>
-      arrayOf(STEP_COUNT, i => ({ enabled: i < $enabledStepCount }))
+      arrayOf(stepCount, i => ({ enabled: i < $enabledStepCount }))
   )
   const stepDuration = derived(bpm, $bpm => 60 / $bpm)
   const stepsDuration = derived(
