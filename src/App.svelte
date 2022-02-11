@@ -23,9 +23,17 @@
 
 	async function connect () {
 		audioContext.resume()
-		monome = await WebMonome.connect()
-		router.start(monome)
-		grid.resolve(monome)
+		try {
+			monome = await WebMonome.connect()
+			router.start(monome)
+			grid.resolve(monome)
+		} catch (e) {
+			connectError()
+		}
+	}
+
+	function connectError () {
+		alert('could not connect to monome grid. please use a chromium browser and disable serialosc.')
 	}
 </script>
 
