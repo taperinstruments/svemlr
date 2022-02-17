@@ -12,7 +12,7 @@ route(
   [samples.replay],
 )
 route(
-  ({ x, y, state }) => y === 0 && x < 4 && state,
+  ({ x, y }) => y === 0 && x < 4,
   groups.change
 )
 route(

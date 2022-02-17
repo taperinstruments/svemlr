@@ -31,6 +31,31 @@ export function Group ({ id, audioContext }) {
     muted.set(!get(muted))
   }
 
+  const LEVEL_TRANSITION = 1000 // time (in ms) to go from 0 -> 1
+  const LEVEL_INTERVAL = 1000 / 25 // 25fps
+  const LEVEL_INCREMENT = 1 / (LEVEL_TRANSITION / LEVEL_INTERVAL)
+  let timer
+
+  function startIncreasingLevel () {
+    timer = ramp(level, LEVEL_INCREMENT, LEVEL_INTERVAL)
+  }
+
+  function startDecreasingLevel () {
+    timer = ramp(level, -LEVEL_INCREMENT, LEVEL_INTERVAL)
+  }
+
+  function ramp (store, amount, every) {
+    let value = get(store)
+    return setInterval(function () {
+      value = Math.max(0, Math.min(value + amount, 1))
+      store.set(value)
+    }, every)
+  }
+
+  function stopChangingLevel () {
+    clearInterval(timer)
+  }
+
   return {
     id,
     level,
@@ -38,6 +63,10 @@ export function Group ({ id, audioContext }) {
     active,
     play,
     stop,
-    toggleMute
+    toggleMute,
+    startIncreasingLevel,
+    startDecreasingLevel,
+    stopIncreasingLevel: stopChangingLevel,
+    stopDecreasingLevel: stopChangingLevel
   }
 }
