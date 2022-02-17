@@ -3,7 +3,7 @@
 	import { promise } from './helpers/promise-helpers'
 	import { gridSize } from './helpers/monome-helpers'
 	import WebMonome from 'webmonome'
-
+	import { version } from '../package.json'
 	import { models } from './helpers/model-helpers'
 	import { Group as Grp, groups } from './models/group'
 	import { Sample as Smpl, samples } from './models/sample'
@@ -53,6 +53,9 @@
 		alert('could not connect to monome grid. please use a chromium browser and disable serialosc.')
 	}
 </script>
+<header>
+	<h1>svemlr v{version}</h1>
+</header>
 
 <main>
 	{#if !monome}
@@ -109,6 +112,10 @@
 
 	:global(input[type="checkbox"]) {
 		margin: 0;
+	}
+
+	h1 {
+		font-size: 1rem;
 	}
 
 	pre {
