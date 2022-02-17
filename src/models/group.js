@@ -1,4 +1,4 @@
-import { writable, derived } from 'svelte/store'
+import { writable, derived, get } from 'svelte/store'
 
 export const groups = []
 
@@ -27,12 +27,17 @@ export function Group ({ id, audioContext }) {
     active.set(false)
   }
 
+  function toggleMute () {
+    muted.set(!get(muted))
+  }
+
   return {
     id,
     level,
     muted,
     active,
     play,
-    stop
+    stop,
+    toggleMute
   }
 }

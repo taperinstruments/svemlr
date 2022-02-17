@@ -13,7 +13,7 @@ route(
 )
 route(
   ({ x, y, state }) => y === 0 && x < 4 && state,
-  groups.stop
+  groups.change
 )
 route(
   ({ x, y, state }) => y == 0 && (x == 4 || x == 5) && state,
