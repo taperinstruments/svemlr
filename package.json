@@ -7,7 +7,7 @@
     "build": "vite build",
     "serve": "vite preview",
     "clean": "rm -rf dist/*",
-    "deploy": "npm run clean && npm run build && cd dist && git add --all && git commit -m \"Release at $(date)\" && git push origin gh-pages && cd .."
+    "deploy": "npm run clean && npm run build && cd dist && git add --all && git commit -m \"Release v$npm_package_version\" && git push origin gh-pages && cd .."
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^1.0.0-next.11",
