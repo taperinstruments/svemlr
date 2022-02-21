@@ -23,15 +23,25 @@
   </label>
 
   <label>
-    Length
+    <span>Length</span>
     <input type="range" min="1" max="32" bind:value={$length}>
     <input type="number" min="1" max="32" bind:value={$length}>
-    beats
+    <span>beats</span>
   </label>
 </div>
 
 <style>
   label + label {
+    display: inline-flex;
+    align-items: center;
     margin-left: 1rem;
+  }
+
+  label + label > * + * {
+    margin-left: .5rem;
+  }
+
+  [type=number] {
+    width: 3rem;
   }
 </style>
