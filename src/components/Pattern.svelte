@@ -1,9 +1,8 @@
 <script>
-  import { groups } from '../models/group'
   export let pattern = {}
   export let monome
+  export let x
   let { id, active, toggle, length } = pattern
-  const x = id + groups.length
 
   pattern.onactivity = () => {
     monome.gridLed(x, 0, 0)

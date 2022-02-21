@@ -1,56 +1,34 @@
 <script>
-	import { getContext } from 'svelte'
-	import { promise } from './helpers/promise-helpers'
+	import { getAllContexts } from 'svelte'
 	import { gridSize } from './helpers/monome-helpers'
-	import WebMonome from 'webmonome'
 	import { version } from '../package.json'
-	import { models } from './helpers/model-helpers'
-	import { Group as Grp, groups } from './models/group'
-	import { Sample as Smpl, samples } from './models/sample'
-	import { Pattern as Ptrn, patterns } from './models/pattern'
+	import { Layout } from './models/layout'
+	import { groups } from './models/group'
+	import { samples } from './models/sample'
+	import { patterns } from './models/pattern'
 
+	import Devices from './components/Devices.svelte'
 	import Sample from './components/Sample.svelte'
 	import Files from './components/Files.svelte'
 	import Group from './components/Group.svelte'
 	import Time from './components/Time.svelte'
 	import Pattern from './components/Pattern.svelte'
 
-	const audioContext = getContext('audioContext')
+	const context = getAllContexts()
 
 	export let router = {}
 	export let files = {}
 	export let bpm = {}
 	export let quantize = {}
-	export let scheduler = {}
 
-	let monome
-	const grid = promise()
+	let monome = null
+	$: monome && start(monome)
 
-	async function connect () {
-		audioContext.resume()
-		try {
-			monome = await WebMonome.connect()
-			const { x, y } = await gridSize(monome)
-
-			models(4, Grp, groups, { audioContext })
-			models(y - 1, Smpl, samples, {
-				audioContext,
-				group: groups[0],
-				stepCount: x,
-				bpm,
-				scheduler
-			})
-			models(2, Ptrn, patterns, { bpm, scheduler, router })
-
-			router.start(monome)
-			grid.resolve(monome)
-		} catch (e) {
-			connectError()
-		}
-	}
-
-	function connectError () {
-		alert('could not connect to monome grid. please use a chromium browser and disable serialosc.')
+	async function start (monome) {
+		context.get('audioContext').resume()
+		const { x, y } = await gridSize(monome)
+		Layout(x, y, context)
+		router.start(monome)
 	}
 </script>
 <header>
@@ -58,14 +36,7 @@
 </header>
 
 <main>
-	{#if !monome}
-		<p>Before you start, svemlr requires that <strong>serialosc is disabled</strong>. On macOS open Terminal and execute:</p>
-		<pre><code>launchctl unload /Library/LaunchAgents/org.monome.serialosc.plist</code></pre>
-		<p>To re-enable: <code>launchctl load /Library/LaunchAgents/org.monome.serialosc.plist</code></p>
-		<button on:click={connect}>Connect</button>
-	{/if}
-
-	{#await grid.promise then monome}
+	{#if monome}
 		<section class="samples">
 			<table>
 				<thead>
@@ -77,8 +48,8 @@
 					<th>Group</th>
 				</thead>
 				<tbody>
-					{#each samples as sample}
-						<Sample {sample} {groups} {monome} {files} />
+					{#each $samples as sample (sample)}
+						<Sample {sample} groups={$groups} {monome} {files} />
 					{/each}
 				</tbody>
 			</table>
@@ -90,18 +61,22 @@
 
 		<fieldset>
 			<legend>Patterns</legend>
-			{#each patterns as pattern}
-				<Pattern {pattern} {monome} />
+			{#each $patterns as pattern, i (pattern)}
+				<Pattern {pattern} x={i + $groups.length} {monome} />
 			{/each}
 		</fieldset>
 
 		<fieldset>
 			<legend>Groups</legend>
-			{#each groups as group}
+			{#each $groups as group (group)}
 				<Group {monome} {group} />
 			{/each}
 		</fieldset>
-	{/await}
+	{:else}
+		<section>
+			<Devices bind:selected={monome}/>
+		</section>
+	{/if}
 
 </main>
 
@@ -116,21 +91,6 @@
 
 	h1 {
 		font-size: 1rem;
-	}
-
-	pre {
-		padding: .5rem;
-		font-family: 'Oxygen Mono', monospace;
-		background-color: whitesmoke;
-	}
-
-	pre,
-	code {
-		background-color: whitesmoke;
-	}
-
-	code {
-		padding: .25rem;
 	}
 
 	fieldset {

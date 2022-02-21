@@ -1,8 +1,8 @@
-import { samples } from '../models/sample'
+import { $samples } from '../models/sample'
 
 export default {
   loop: ({ x, y, grid }) => {
-    const sample = samples[y - 1]
+    const sample = $samples[y - 1]
 
     // x coords of currently pressed buttons
     const keyDowns = grid[y].reduce(
@@ -18,7 +18,7 @@ export default {
   },
 
   replay ({ x, y }) {
-    const sample = samples[y - 1]
+    const sample = $samples[y - 1]
     sample.resetLoopPoints()
     sample.start(x)
   }

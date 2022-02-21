@@ -1,4 +1,4 @@
-import { groups } from '../models/group'
+import { $groups } from '../models/group'
 
 export default {
   change: ({ x, state, grid }) => {
@@ -9,13 +9,13 @@ export default {
     const modifier2 = keyDowns.includes(grid[0].length - 1)
 
     if (state) {
-      if (modifier1 && modifier2) groups[x].toggleMute()
-      else if (modifier1) groups[x].startDecreasingLevel()
-      else if (modifier2) groups[x].startIncreasingLevel()
-      else groups[x].stop()
+      if (modifier1 && modifier2) $groups[x].toggleMute()
+      else if (modifier1) $groups[x].startDecreasingLevel()
+      else if (modifier2) $groups[x].startIncreasingLevel()
+      else $groups[x].stop()
     } else {
-      groups[x].stopDecreasingLevel()
-      groups[x].stopIncreasingLevel()
+      $groups[x].stopDecreasingLevel()
+      $groups[x].stopIncreasingLevel()
     }
   }
 }

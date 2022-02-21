@@ -1,6 +1,8 @@
 import { writable, derived } from 'svelte/store'
 
-export const patterns = []
+export const patterns = writable([])
+export let $patterns
+patterns.subscribe(value => $patterns = value)
 
 /**
  * @param {{

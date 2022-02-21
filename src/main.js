@@ -1,5 +1,6 @@
 import { get } from 'svelte/store'
 import App from './App.svelte'
+import context from './context'
 import * as router from './router.js'
 import './routes.js'
 import { files } from './models/files'
@@ -16,16 +17,20 @@ scheduler.start()
 bpm.subscribe($bpm => scheduler.bpm = $bpm)
 quantize.subscribe($quantize => scheduler.quantize = $quantize)
 
+context.set('audioContext', audioContext)
+context.set('scheduler', scheduler)
+context.set('bpm', bpm)
+context.set('router', router)
+
 const app = new App({
   target: document.getElementById('app'),
   props: {
     router,
     files,
     bpm,
-    quantize,
-    scheduler
+    quantize
   },
-  context: new Map([['audioContext', audioContext]])
+  context
 })
 
 export default app

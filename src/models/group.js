@@ -1,6 +1,8 @@
 import { writable, derived, get } from 'svelte/store'
 
-export const groups = []
+export const groups = writable([])
+export let $groups
+groups.subscribe(value => $groups = value)
 
 export function Group ({ id, audioContext }) {
   let currentSource

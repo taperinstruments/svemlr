@@ -8,7 +8,7 @@ export function gridLedRow (monome, y, states) {
 
 export async function gridSize (monome) {
   return new Promise(resolve => {
-    monome.on('getGridSize', e => resolve(e))
+    monome.addEventListener('getGridSize', e => resolve(e.detail))
     monome.getGridSize()
   })
 }

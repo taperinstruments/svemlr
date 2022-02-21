@@ -2,6 +2,9 @@ import { arrayOf } from './helpers/array-helpers'
 import { gridSize } from './helpers/monome-helpers'
 
 const routes = []
+let currentDevice
+let onKeyDown
+let onKeyUp
 let grid = arrayOf(16, () => arrayOf(16, 0))
 
 export function route (matcher, handler) {
@@ -9,14 +12,21 @@ export function route (matcher, handler) {
 }
 
 export async function start (device) {
-  device.on('gridKeyDown', ({ x, y }) =>
+  stop()
+  device.addEventListener('gridKeyDown', onKeyDown = ({ detail: { x, y } }) =>
     handle({ x, y, state: 1, source: 'press' })
   )
-  device.on('gridKeyUp', ({ x, y }) =>
+  device.addEventListener('gridKeyUp', onKeyUp = ({ detail: { x, y } }) =>
     handle({ x, y, state: 0, source: 'press' })
   )
+  currentDevice = device
   const { x, y } = await gridSize(device)
   grid = arrayOf(y, () => arrayOf(x, 0))
+}
+
+export function stop () {
+  currentDevice?.removeEventListener('gridKeyDown', onKeyDown)
+  currentDevice?.removeEventListener('gridKeyUp', onKeyUp)
 }
 
 export function handle ({ x, y, state, source }) {

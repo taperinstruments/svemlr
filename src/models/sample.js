@@ -4,7 +4,9 @@ import { arrayOf } from '../helpers/array-helpers'
 import { reverseBuffer, createBufferSource } from '../helpers/audio-helpers'
 import { Playhead } from './playhead'
 
-export const samples = []
+export const samples = writable([])
+export let $samples
+samples.subscribe(value => $samples = value)
 
 /**
  * @param {{
